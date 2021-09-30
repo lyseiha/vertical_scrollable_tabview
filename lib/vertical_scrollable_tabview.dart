@@ -26,7 +26,7 @@ class VerticalScrollableTabView extends StatefulWidget {
 
   final bool _addAutomaticKeepAlives;
   final bool _addRepaintBoundaries;
-  final ScrollPhysics _physics;
+  final ScrollPhysics? _physics;
 
   /// Required a List<dynamic> Type，you can put your data that you wanna put in item
   /// 要求 List<dynamic> 的結構，List 裡面可以放自己建立的 Object
@@ -45,7 +45,7 @@ class VerticalScrollableTabView extends StatefulWidget {
       required List<dynamic> listItemData,
       bool addAutomaticKeepAlives = true,
       bool addRepaintBoundaries = true,
-      ScrollPhysics physics = ClampingScrollPhysics(),
+      ScrollPhysics? physics,
       required Widget Function(dynamic aaa, int index) eachItemChild,
       VerticalScrollPosition verticalScrollPosition = VerticalScrollPosition.begin})
       : _tabController = tabController,
@@ -115,7 +115,7 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView> w
       itemCount: widget._listItemData.length,
       addAutomaticKeepAlives: widget._addAutomaticKeepAlives,
       addRepaintBoundaries: widget._addRepaintBoundaries,
-      physics: widget._physics,
+      physics: widget._physics ?? ClampingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         /// Initial Key of itemKeys
         /// 初始化 itemKeys 的 key
