@@ -24,6 +24,10 @@ class VerticalScrollableTabView extends StatefulWidget {
   /// TabBar Controller 用來讓 widget 監聽 TabBar 的 index 是否有更動
   final TabController _tabController;
 
+  final bool _addAutomaticKeepAlives;
+  final bool _addRepaintBoundaries;
+  final ScrollPhysics _physics;
+
   /// Required a List<dynamic> Type，you can put your data that you wanna put in item
   /// 要求 List<dynamic> 的結構，List 裡面可以放自己建立的 Object
   final List<dynamic> _listItemData;
@@ -39,21 +43,24 @@ class VerticalScrollableTabView extends StatefulWidget {
   const VerticalScrollableTabView(
       {required TabController tabController,
       required List<dynamic> listItemData,
+      bool addAutomaticKeepAlives = true,
+      bool addRepaintBoundaries = true,
+      ScrollPhysics physics = ClampingScrollPhysics(),
       required Widget Function(dynamic aaa, int index) eachItemChild,
-      VerticalScrollPosition verticalScrollPosition =
-          VerticalScrollPosition.begin})
+      VerticalScrollPosition verticalScrollPosition = VerticalScrollPosition.begin})
       : _tabController = tabController,
         _listItemData = listItemData,
+        _addAutomaticKeepAlives = addAutomaticKeepAlives,
+        _addRepaintBoundaries = addRepaintBoundaries,
+        _physics = physics,
         _eachItemChild = eachItemChild,
         _verticalScrollPosition = verticalScrollPosition;
 
   @override
-  _VerticalScrollableTabViewState createState() =>
-      _VerticalScrollableTabViewState();
+  _VerticalScrollableTabViewState createState() => _VerticalScrollableTabViewState();
 }
 
-class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView>
-    with SingleTickerProviderStateMixin {
+class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView> with SingleTickerProviderStateMixin {
   /// Instantiate scroll_to_index (套件提供的方法)
   late AutoScrollController scrollController;
 
@@ -106,6 +113,9 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView>
     return ListView.builder(
       controller: scrollController,
       itemCount: widget._listItemData.length,
+      addAutomaticKeepAlives: widget._addAutomaticKeepAlives,
+      addRepaintBoundaries: widget._addRepaintBoundaries,
+      physics: widget._physics,
       itemBuilder: (BuildContext context, int index) {
         /// Initial Key of itemKeys
         /// 初始化 itemKeys 的 key
@@ -129,6 +139,7 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView>
       ),
     );
   }
+
   /// Animation Function for tabBarListener
   /// This need to put inside TabBar onTap, but in this case we put inside tabBarListener
   void animateAndScrollTo(int index) async {
@@ -158,15 +169,16 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView>
   /// true表示消費掉當前通知不再向上一级NotificationListener傳遞通知，false則會再向上一级NotificationListener傳遞通知；
   bool onScrollNotification(ScrollNotification notification) {
     if (pauseRectGetterIndex) return true;
+
     /// get tabBar index
     /// 取得 tabBar 的長度
     int lastTabIndex = widget._tabController.length - 1;
 
     List<int> visibleItems = getVisibleItemsIndex();
+
     /// define what is reachLastTabIndex
-    bool reachLastTabIndex = visibleItems.isNotEmpty &&
-        visibleItems.length <= 2 &&
-        visibleItems.last == lastTabIndex;
+    bool reachLastTabIndex = visibleItems.isNotEmpty && visibleItems.length <= 2 && visibleItems.last == lastTabIndex;
+
     /// if reachLastTabIndex, then scroll to last index
     /// 如果到達最後一個 index 就跳轉到最後一個 index
     if (reachLastTabIndex) {
@@ -177,11 +189,11 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView>
       int sumIndex = visibleItems.reduce((value, element) => value + element);
       // 5 ~/ 2 = 2  => Result is an int 取整數
       int middleIndex = sumIndex ~/ visibleItems.length;
-      if (widget._tabController.index != middleIndex)
-        widget._tabController.animateTo(middleIndex);
+      if (widget._tabController.index != middleIndex) widget._tabController.animateTo(middleIndex);
     }
     return false;
   }
+
   /// getVisibleItemsIndex on Screen
   /// 取得現在畫面上可以看得到的 Items Index
   List<int> getVisibleItemsIndex() {
