@@ -26,6 +26,7 @@ class VerticalScrollableTabView extends StatefulWidget {
 
   final bool _addAutomaticKeepAlives;
   final bool _addRepaintBoundaries;
+  final double? _cacheExtent;
   final ScrollPhysics? _physics;
 
   /// Required a List<dynamic> Type，you can put your data that you wanna put in item
@@ -45,6 +46,7 @@ class VerticalScrollableTabView extends StatefulWidget {
       required List<dynamic> listItemData,
       bool addAutomaticKeepAlives = true,
       bool addRepaintBoundaries = true,
+      double? cacheExtent,
       ScrollPhysics? physics,
       required Widget Function(dynamic aaa, int index) eachItemChild,
       VerticalScrollPosition verticalScrollPosition = VerticalScrollPosition.begin})
@@ -52,6 +54,7 @@ class VerticalScrollableTabView extends StatefulWidget {
         _listItemData = listItemData,
         _addAutomaticKeepAlives = addAutomaticKeepAlives,
         _addRepaintBoundaries = addRepaintBoundaries,
+        _cacheExtent = cacheExtent,
         _physics = physics,
         _eachItemChild = eachItemChild,
         _verticalScrollPosition = verticalScrollPosition;
@@ -115,6 +118,7 @@ class _VerticalScrollableTabViewState extends State<VerticalScrollableTabView> w
       itemCount: widget._listItemData.length,
       addAutomaticKeepAlives: widget._addAutomaticKeepAlives,
       addRepaintBoundaries: widget._addRepaintBoundaries,
+      cacheExtent: widget._cacheExtent,
       physics: widget._physics ?? ClampingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         /// Initial Key of itemKeys
